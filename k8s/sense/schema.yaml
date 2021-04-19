@@ -1,0 +1,163 @@
+x-google-marketplace:
+  schemaVersion: v2
+
+  applicationApiVersion: v1beta1
+
+  publishedVersion: "$TAG"
+  publishedVersionMetadata:
+    releaseNote: >-
+      Initial Sixgill Sense Google Marketplace Release.
+    releaseTypes:
+      - Feature
+    recommended: true
+
+  clusterConstraints:
+    assistedClusterCreation:
+      type: DISABLED
+      creationGuidance: "New Clusters should have a node pool available with at least 4 NVIDIA TESLA T4 GPUs available, and the nvidia driver daemonset deployed."
+    istio:
+      type: UNSUPPORTED
+    resources:
+    - requests:
+        gpu:
+          nvidia.com/gpu:
+            limits: 4
+            platforms:
+            - nvidia-tesla-t4
+            - nvidia-tesla-k80
+
+  images:
+    '':
+      properties:
+        imageRepo:
+          type: REPO_WITH_REGISTRY
+        imageTag:
+          type: TAG
+    accounts:
+      properties:
+        sense.accounts.registry:
+          type: REGISTRY
+        sense.accounts.repo:
+          type: REPO_WITHOUT_REGISTORY
+        sense.accounts.tag:
+          type: TAG
+    autolabel:
+      properties:
+        sense.autolabel.registry:
+          type: REGISTRY
+        sense.autolabel.repo:
+          type: REPO_WITHOUT_REGISTORY
+        sense.autolabel.tag:
+          type: TAG
+    nextlabel:
+      properties:
+        sense.nextlabel.registry:
+          type: REGISTRY
+        sense.nextlabel.repo:
+          type: REPO_WITHOUT_REGISTORY
+        sense.nextlabel.tag:
+          type: TAG
+    hyperlabel:
+      properties:
+        sense.hyperlabel.registry:
+          type: REGISTRY
+        sense.hyperlabel.repo:
+          type: REPO_WITHOUT_REGISTORY
+        sense.hyperlabel.tag:
+          type: TAG
+    smartpoly:
+      properties:
+        sense.smartpoly.registry:
+          type: REGISTRY
+        sense.smartpoly.repo:
+          type: REPO_WITHOUT_REGISTORY
+        sense.smartpoly.tag:
+          type: TAG
+    dashboard:
+      properties:
+        sense.dashboard.registry:
+          type: REGISTRY
+        sense.dashboard.repo:
+          type: REPO_WITHOUT_REGISTORY
+        sense.dashboard.tag:
+          type: TAG
+    backendApi:
+      properties:
+        sense.backendApi.registry:
+          type: REGISTRY
+        sense.backendApi.repo:
+          type: REPO_WITHOUT_REGISTORY
+        sense.backendApi.tag:
+          type: TAG
+    migrator:
+      properties:
+        sense.migrator.registry:
+          type: REGISTRY
+        sense.migrator.repo:
+          type: REPO_WITHOUT_REGISTORY
+        sense.migrator.tag:
+          type: TAG
+
+properties:
+  accounts:
+    type: string
+    default: gcr.io/sense-marketplace-production/sense/accounts:v1.0.0
+    x-google-marketplace:
+      type: IMAGE
+  autolabel:
+    type: string
+    default: gcr.io/sense-marketplace-production/sense/autolabel:v1.0.0
+    x-google-marketplace:
+      type: IMAGE
+  nextlabel:
+    type: string
+    default: gcr.io/sense-marketplace-production/sense/nextlabel:v1.0.0
+    x-google-marketplace:
+      type: IMAGE
+  hyperlabel:
+    type: string
+    default: gcr.io/sense-marketplace-production/sense/hyperlabel:v1.0.0
+    x-google-marketplace:
+      type: IMAGE
+  smartploy:
+    type: string
+    default: gcr.io/sense-marketplace-production/sense/smartpoly:v1.0.0
+    x-google-marketplace:
+      type: IMAGE
+  dashboard:
+    type: string
+    default: gcr.io/sense-marketplace-production/sense/dashboard:v1.0.0
+    x-google-marketplace:
+      type: IMAGE
+  backendApi:
+    type: string
+    default: gcr.io/sense-marketplace-production/sense/backendApi:v1.0.0
+    x-google-marketplace:
+      type: IMAGE
+  migrator:
+    type: string
+    default: gcr.io/sense-marketplace-production/sense/migrator:v1.0.0
+    x-google-marketplace:
+      type: IMAGE
+  name:
+    title: Release Name
+    description: The name to give the Release
+    type: string
+    default: sense
+    x-google-marketplace:
+      type: NAME
+  global.domain_name:
+    title: Domain name
+    description: The domain name to configure the sense application with
+    type: string
+  namespace:
+    title: Kubernetes Namespace
+    description: The namespace to deploy the Sense application to.
+    type: string
+    default: sense
+    x-google-marketplace:
+      type: NAMESPACE
+required:
+- name
+- global.domain_name
+- namespace
