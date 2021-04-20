@@ -1,0 +1,105 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/Values",
+    "definitions": {
+        "Values": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "global": {
+                    "$ref": "#/definitions/Global"
+                },
+                "sense": {
+                    "$ref": "#/definitions/Sense"
+                }
+            },
+            "required": [
+                "global",
+                "sense"
+            ],
+            "title": "Sense Helm Values"
+        },
+        "Global": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "imagePullSecrets": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "domain_name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "domain_name"
+            ],
+            "title": "Global"
+        },
+        "Sense": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "ingress_available": {
+                    "type": "boolean"
+                },
+                "autolabel": {
+                    "$ref": "#/definitions/Service",
+                    "title": "AutoLabel"
+                },
+                "nextlabel": {
+                    "$ref": "#/definitions/Service",
+                    "title": "NextLabel"
+                },
+                "smartpoly": {
+                    "$ref": "#/definitions/Service",
+                    "title": "SmartPoly"
+                },
+                "dashboard": {
+                    "$ref": "#/definitions/Service",
+                    "title": "Dashboard"
+                },
+                "backendApi": {
+                    "$ref": "#/definitions/Service",
+                    "title": "Backend API"
+                },
+                "migrator": {
+                    "$ref": "#/definitions/Service",
+                    "title": "Migrator"
+                }
+            },
+            "required": [
+                "autolabel",
+                "backendApi",
+                "dashboard",
+                "ingress_available",
+                "migrator",
+                "nextlabel",
+                "smartpoly"
+            ],
+            "title": "Sense"
+        },
+        "Service": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "registry": {
+                    "type": "string"
+                },
+                "repo": {
+                    "type": "string"
+                },
+                "tag": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "registry",
+                "repo",
+                "tag"
+            ]
+        }
+    }
+}
