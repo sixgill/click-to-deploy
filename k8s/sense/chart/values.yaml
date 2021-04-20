@@ -1,0 +1,38 @@
+global:
+    imagePullSecrets: 
+    - regcred
+    domain_name: ""
+
+sense:
+    ingress_available: true
+
+    autolabel:
+        registry: gcr.io
+        repo: sense-artifacts/marketplace/autolabel
+        tag: latest
+    
+    nextlabel:
+        registry: gcr.io
+        repo: sense-artifacts/marketplace/nextlabel
+        tag: latest
+
+    smartpoly:
+        registry: gcr.io
+        repo: sense-artifacts/marketplace/smartpoly
+        tag: latest
+
+    dashboard:
+        registry: gcr.io
+        repo: sense-artifacts/marketplace/dashboard
+        tag: latest
+
+    backendApi:
+        registry: gcr.io
+        repo: sense-artifacts/marketplace/backend-api
+        tag: fix
+
+    migrator:
+        registry: gcr.io
+        repo: sense-artifacts/marketplace/migrator
+        tag: latest
+            

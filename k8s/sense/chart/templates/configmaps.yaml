@@ -1,0 +1,77 @@
+---
+####################
+# Autolabel
+####################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: autolabel
+    namespace: {{ .Release.Namespace | default "sense" }}
+data:
+    AUTOLABEL_SERVICE_PORT: "5000"
+---
+####################
+# Accounts
+####################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: accounts
+    namespace: sense
+data:
+    SQL_DATABASE: sense
+    SQL_HOST: "sense-postgres.{{ .Release.Namespace | default "sense" }}.svc.cluster.local"
+    SQL_PORT: "5432"
+    SSL_EXTRA: enabled
+    AUTH_HANDLER_URL: ""
+    NODE_ENV: production
+    HUBSPOT_PORTAL_ID: ""
+    HUBSPOT_FORM_ID: ""
+    ENVIRONMENT: ""
+    PUBSUB_TOPIC_PREFIX: ""
+    NEW_RELIC_APP_NAME: ""
+    APP_URL: ""
+---
+####################
+# Backend API (ingress)
+####################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: backend-api
+    namespace: sense
+data:
+    SENSE_INGRESS_GRPC_PORT: "9090"
+    SENSE_INGRESS_LOGGER_JSON: "true"
+    LOGGER_LEVEL: "info"
+    SENSE_INGRESS_BLOB_ENABLED_STORES: "gcs"
+    SENSE_INGRESS_BLOB_DEFAULT_STORE: "gcs"
+    SENSE_INGRESS_BLOB_GCS_STORE_UPLOAD_BUCKET: "{{ .Values.global.bucketName }}/backendApi/upload/"
+    SENSE_INGRESS_PORT: "5005"
+    SENSE_INGRESS_TRACE_ERROR: "false"
+    SENSE_INGRESS_SESSION_EXPIRATION: 720h
+    SENSE_INGRESS_REDIS_ADDRS: "http://redis_master.{{ .Release.Namespace | default "sense" }}.svc.cluster.local:6397"
+    SENSE_INGRESS_REDIS_MASTER_INGRESS_USE_AUTHENTICATION: "true"
+    SENSE_INGRESS_REGISTRAR: sql
+    SENSE_INGRESS_DOCUMENT_ENABLED_STORES: tsdb
+    SENSE_INGRESS_EMAIL_SENDER: no-reply@sixgill.com
+    SENSE_INGRESS_SQL_RUN_SETUP: "false"
+    GOOGLE_PROJECT_ID: sixgill
+    SENSE_INGRESS_HYPERLABEL_RECT2POLY_DEBUG: "true"
+    HYPERLABEL_ENDPOINT: https://ingress.stage.sixgill.io/hl
+    HYPERLABEL_UPLOAD_BUCKET: "{{ .Values.global.bucketName }}/hyperlabel/upload/"
+    SENSE_INGRESS_BG_AUTOLABEL_SERVICE: "http://autolabel-cuda11.{{ .Release.Namespace | default "sense" }}.svc.cluster.local:8080"
+    SENSE_INGRESS_BG_AUTOLABEL_TIMEOUT: 30s
+    SENSE_INGRESS_BG_DEBUG: "true"  
+    SENSE_INGRESS_SQL_DIALECT: postgres
+---
+####################
+# Migrator
+####################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: migrator
+  namespace: {{ .Release.Namespace | default "sense" }}
+data:
+  SENSE_INGRESS_SQL_DIALECT: postgres

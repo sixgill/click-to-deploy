@@ -1,0 +1,46 @@
+{{- if .Values.sense }}
+{{- if .Values.sense.ingress_available }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: frontend
+    namespace: {{ .Release.Namespace | default "sense" }}
+    annotations:
+        nginx.ingress.kubernetes.io/service-upstream: "true"
+        nginx.ingress.kubernetes.io/upstream-vhost: $service_name.$namespace.svc.cluster.local
+spec:
+  rules:
+  - host: "{{ .Release.Name }}.{{ .Values.global.domain_name | default "sixgill.io" }}"
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: dashboard
+            port: 
+              number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: backend
+    namespace: {{ .Release.Namespace | default "sense" }}
+    annotations:
+        nginx.ingress.kubernetes.io/service-upstream: "true"
+        nginx.ingress.kubernetes.io/upstream-vhost: $service_name.$namespace.svc.cluster.local
+spec:
+  rules:
+  - host: "api.{{ .Release.Name }}.{{ .Values.global.domain_name | default "sixgill.io" }}"
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: backend-api
+            port: 
+              number: 8080
+{{ end -}}
+{{ end -}}

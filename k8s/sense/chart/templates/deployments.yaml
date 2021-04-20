@@ -1,0 +1,338 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autolabel
+  namespace: {{ .Release.Namespace | default "sense" }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: autolabel
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: autolabel
+    spec:
+      containers:
+      - args:
+        - -c
+        - gunicorn -b 0.0.0.0:$AUTOLABEL_SERVICE_PORT -w 1 autolabel_service.flask_server:app
+        command:
+        - /bin/sh
+        envFrom:
+        - configMapRef:
+            name: autolabel
+        {{ if .Values.sense }}
+        {{ if .Values.sense.autolabel }}
+        image: "{{ .Values.sense.autolabel.registry }}/{{ .Values.sense.autolabel.repo }}:{{ .Values.sense.autolabel.tag }}"
+        {{ else }}
+        image: "gcr.io/sense-artifacts/marketplace/autolabel:latest"
+        {{ end }}
+        {{ else }}
+        image: "gcr.io/sense-artifacts/marketplace/autolabel:latest"
+        {{ end }}imagePullPolicy: IfNotPresent
+        name: autolabel
+        ports:
+        - containerPort: 5000
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            nvidia.com/gpu: "1"
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      {{ if .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+      {{ range .Values.global.imagePullSecrets }}
+        - name: {{ . }}
+      {{ end }}
+      {{ end }}
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: autolabel-service-account
+        secret:
+          defaultMode: 420
+          secretName: autolabel-service-account
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextlabel
+  namespace: {{ .Release.Namespace | default "sense" }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: nextlabel
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: nextlabel
+    spec:
+      containers:
+      - args:
+        - -b
+        - 0.0.0.0:1234
+        - -w
+        - "1"
+        - api.server:app
+        command:
+        - gunicorn
+        {{ if .Values.sense }}
+        {{ if .Values.sense.nextlabel }}
+        image: "{{ .Values.sense.nextlabel.registry }}/{{ .Values.sense.nextlabel.repo }}:{{ .Values.sense.nextlabel.tag }}"
+        {{ else }}
+        image: "gcr.io/sense-artifacts/marketplace/nextlabel:latest"
+        {{ end }}
+        {{ else }}
+        image: "gcr.io/sense-artifacts/marketplace/nextlabel:latest"
+        {{ end }}
+        imagePullPolicy: Always
+        name: nextlabel
+        ports:
+        - containerPort: 1234
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            nvidia.com/gpu: "1"
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      {{ if .Values.global }}
+      {{ if .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+      {{ range .Values.global.imagePullSecrets }}
+        - name: {{ . }}
+      {{ end }}
+      {{ end }}
+      {{ end }}
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard
+  namespace: {{ .Release.Namespace | default "sense" }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: dashboard
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: dashboard
+    spec:
+      containers:
+      {{ if .Values.sense }}
+      {{ if .Values.sense.dashboard }}
+      - image: "{{ .Values.sense.dashboard.registry }}/{{ .Values.sense.dashboard.repo }}:{{ .Values.sense.dashboard.tag }}"
+      {{ else }}
+      - image: "gcr.io/sense-artifacts/marketplace/dashboard:latest"
+      {{ end }}
+      {{ else }}
+      - image: "gcr.io/sense-artifacts/marketplace/dashboard:latest"
+      {{ end }}
+        imagePullPolicy: Always
+        name: dashboard
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /
+            port: 80
+            scheme: HTTP
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 15
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      {{ if .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+      {{ range .Values.global.imagePullSecrets }}
+        - name: {{ . }}
+      {{ end }}
+      {{ end }}
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+  namespace: {{ .Release.Namespace | default "sense" }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: backend-api
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: backend-api
+    spec:
+      containers:
+      - args:
+        - -logtostderr
+        command:
+        - /bin/ingress
+        envFrom:
+        - configMapRef:
+            name: backend-api
+        - secretRef:
+            name: sense-secret
+        {{ if .Values.sense }}
+        {{ if .Values.sense.backendApi }}
+        image: "{{ .Values.sense.backendApi.registry }}/{{ .Values.sense.backendApi.repo }}:{{ .Values.sense.backendApi.tag }}"
+        {{ else }}
+        image: "gcr.io/sense-artifacts/marketplace/backend-api:latest"
+        {{ end }}
+        {{ else }}
+        image: "gcr.io/sense-artifacts/marketplace/backend-api:latest"
+        {{ end }}
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /metrics
+            port: 5005
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: backend-api
+        ports:
+        - containerPort: 5005
+          name: http
+        - containerPort: 9090
+          name: agent
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 5005
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      {{ if .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+      {{ range .Values.global.imagePullSecrets }}
+        - name: {{ . }}
+      {{ end }}
+      {{ end }}
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartpoly
+  namespace: {{ .Release.Namespace | default "sense" }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: smartpoly
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: smartpoly
+    spec:
+      containers:
+      - args:
+        - -b
+        - 0.0.0.0:1234
+        - -w
+        - "1"
+        - server:app
+        command:
+        - gunicorn
+        {{ if .Values.sense }}
+        {{ if .Values.sense.smartpoly }}
+        image: "{{ .Values.sense.smartpoly.registry }}/{{ .Values.sense.smartpoly.repo }}:{{ .Values.sense.smartpoly.tag }}"
+        {{ else }}
+        image: "gcr.io/sense-artifacts/marketplace/smartpoly:latest"
+        {{ end }}
+        {{ else }}
+        image: "gcr.io/sense-artifacts/marketplace/smartpoly:latest"
+        {{ end }}
+        imagePullPolicy: Always
+        name: smartpoly
+        ports:
+        - containerPort: 1234
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            nvidia.com/gpu: "1"
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      {{ if .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+      {{ range .Values.global.imagePullSecrets }}
+        - name: {{ . }}
+      {{ end }}
+      {{ end }}
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

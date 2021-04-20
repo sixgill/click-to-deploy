@@ -1,0 +1,40 @@
+apiVersion: app.k8s.io/v1beta1
+kind: Application
+metadata:
+  name: "sense"
+  labels:
+    app.kubernetes.io/name: "sense"
+spec:
+  selector:
+    matchLabels:
+     app.kubernetes.io/name: "sense"
+  componentKinds:
+    - group: v1
+      kind: Service
+    - group: v1
+      kind: Secret
+    - group: v1
+      kind: ConfigMap
+    - group: batch/v1
+      kind: Job
+    - group: apps
+      kind: Deployment
+    - group: extensions/v1beta1
+      kind: Ingress
+  addOwnerRef: true
+  descriptor:
+    type: "sense"
+    keywords:
+      - "computer vision"
+      - "machine learning"
+    links:
+      - description: About
+        url: "https://sixgill.com/platform/sense-ai-lifecycle-management/"
+    version: "1.0.0"
+    description: Sense Streamlines End-to-End Machine Learning & Computer Vision Lifecycle"
+    maintainers:
+      - name: Sixgill Operations
+        email: ops@sixgill.com
+    owners:
+      - name: Sixgill
+        email: info@sixgill.com

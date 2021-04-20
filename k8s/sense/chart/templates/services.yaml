@@ -1,0 +1,90 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: autolabel
+  name: autolabel
+  namespace: {{ .Release.Namespace | default "sense" }}
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: autolabel
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nextlabel
+  name: nextlabel
+  namespace: {{ .Release.Namespace | default "sense" }}
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 1234
+  selector:
+    app: nextlabel
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: dashboard
+  name: dashboard
+  namespace: {{ .Release.Namespace | default "sense" }}
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: dashboard
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: backend-api
+  name: backend-api
+  namespace: {{ .Release.Namespace | default "sense" }}
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 5005
+  - name: agent
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  selector:
+    app: backend-api
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: smartpoly
+  name: smartpoly
+  namespace: {{ .Release.Namespace | default "sense" }}
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 1234
+  selector:
+    app: smartpoly
+  sessionAffinity: None
+  type: ClusterIP
