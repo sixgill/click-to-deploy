@@ -99,11 +99,6 @@ x-google-marketplace:
           type: TAG
 
 properties:
-  accounts:
-    type: string
-    default: gcr.io/sense-marketplace-production/sense/accounts:v1.0.0
-    x-google-marketplace:
-      type: IMAGE
   autolabel:
     type: string
     default: gcr.io/sense-marketplace-production/sense/autolabel:v1.0.0
@@ -112,11 +107,6 @@ properties:
   nextlabel:
     type: string
     default: gcr.io/sense-marketplace-production/sense/nextlabel:v1.0.0
-    x-google-marketplace:
-      type: IMAGE
-  hyperlabel:
-    type: string
-    default: gcr.io/sense-marketplace-production/sense/hyperlabel:v1.0.0
     x-google-marketplace:
       type: IMAGE
   smartploy:
@@ -139,6 +129,10 @@ properties:
     default: gcr.io/sense-marketplace-production/sense/migrator:v1.0.0
     x-google-marketplace:
       type: IMAGE
+  sense.ingress_available:
+    type: boolean
+    x-google-marketplace:
+      type: INGRESS_AVAILABLE
   name:
     title: Release Name
     description: The name to give the Release

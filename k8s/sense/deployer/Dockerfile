@@ -9,7 +9,7 @@ RUN cd /tmp && tar -czvf /tmp/sense.tar.gz chart
 
 ADD apptest/deployer/sense /tmp/test/chart
 RUN cd /tmp/test \
-    && tar -czvf /tmp/test/nginx.tar.gz chart/
+    && tar -czvf /tmp/test/sense.tar.gz chart/
 
 ADD schema.yaml /tmp/schema.yaml
 
@@ -28,7 +28,7 @@ RUN cat /tmp/apptest/schema.yaml \
     && mv /tmp/apptest/schema.yaml.new /tmp/apptest/schema.yaml
 
 FROM gcr.io/cloud-marketplace-tools/k8s/deployer_helm:$MARKETPLACE_TOOLS_TAG
-COPY --from=build /tmp/nginx.tar.gz /data/chart/
+COPY --from=build /tmp/sense.tar.gz /data/chart/
 COPY --from=build /tmp/test/sense.tar.gz /data-test/chart/
 COPY --from=build /tmp/apptest/schema.yaml /data-test/
 COPY --from=build /tmp/schema.yaml /data/
