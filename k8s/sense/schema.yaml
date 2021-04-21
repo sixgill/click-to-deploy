@@ -57,14 +57,6 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTORY
         sense.nextlabel.tag:
           type: TAG
-    hyperlabel:
-      properties:
-        sense.hyperlabel.registry:
-          type: REGISTRY
-        sense.hyperlabel.repo:
-          type: REPO_WITHOUT_REGISTORY
-        sense.hyperlabel.tag:
-          type: TAG
     smartpoly:
       properties:
         sense.smartpoly.registry:
@@ -81,13 +73,13 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTORY
         sense.dashboard.tag:
           type: TAG
-    backendApi:
+    api:
       properties:
-        sense.backendApi.registry:
+        sense.api.registry:
           type: REGISTRY
-        sense.backendApi.repo:
+        sense.api.repo:
           type: REPO_WITHOUT_REGISTORY
-        sense.backendApi.tag:
+        sense.api.tag:
           type: TAG
     migrator:
       properties:
@@ -119,9 +111,9 @@ properties:
     default: gcr.io/sense-marketplace-production/sense/dashboard:v1.0.0
     x-google-marketplace:
       type: IMAGE
-  backendApi:
+  api:
     type: string
-    default: gcr.io/sense-marketplace-production/sense/backendApi:v1.0.0
+    default: gcr.io/sense-marketplace-production/sense/api:v1.0.0
     x-google-marketplace:
       type: IMAGE
   migrator:
@@ -129,10 +121,6 @@ properties:
     default: gcr.io/sense-marketplace-production/sense/migrator:v1.0.0
     x-google-marketplace:
       type: IMAGE
-  sense.ingress_available:
-    type: boolean
-    x-google-marketplace:
-      type: INGRESS_AVAILABLE
   name:
     title: Release Name
     description: The name to give the Release
@@ -140,10 +128,6 @@ properties:
     default: sense
     x-google-marketplace:
       type: NAME
-  global.domain_name:
-    title: Domain name
-    description: The domain name to configure the sense application with
-    type: string
   namespace:
     title: Kubernetes Namespace
     description: The namespace to deploy the Sense application to.
@@ -151,7 +135,142 @@ properties:
     default: sense
     x-google-marketplace:
       type: NAMESPACE
+  sense.ingress_available:
+    type: "boolean"
+    x-google-marketplace:
+      type: INGRESS_AVAILABLE
+  sense.config.domain_name:
+    title: "Domain Name"
+    description: "The domain name to configure the Sense application to use."
+    type: string
+  sense.config.org.name:
+    title: "Organization Name"
+    description: "The organization name to create within the Sense application."
+    type: string
+  sense.config.org.admin_email:
+    title: "Administrators E-mail Address"
+    description: "The initial administrator account e-mail address to create within the Sense application"
+    type: string
+  sense.config.storage.bucket_name:
+    title: "Google Cloud Storage Bucket Name"
+    description: "The name of the Google Cloud Storage Bucket for the Sense application to use."
+    type: string
+  sense.config.storage.bucket_service_account_json:
+    title: "Google Cloud Storage Bucket Service Account"
+    description: |
+      The IAM Service Account JSON key file contents that the Sense application should use to access the provided Google Cloud Storage Bucket.
+      Alternatively, the Google Kubernetes Engine nodes that Sense will be running on can be configured to use an instance-level Service Account
+      so that a service account does not need to be supplied to the Sense application.
+    type: string
+  sense.config.db.hostname:
+    title: "Google Cloud SQL Database Hostname"
+    description: |
+      The hostname of the pre-provisioned Google Cloud SQL Database.
+      The database should be provisioned as a Postgresql compatible database.
+    type: string
+  sense.config.db.port:
+    title: "Google Cloud SQL Database Port"
+    description: "The port of the pre-provisioned Google Cloud SQL Database."
+    type: integer
+  sense.config.db.database_name:
+    title: "Google Cloud SQL Database Name"
+    description: "The name of the database pre-provisioned in the Google Cloud SQL Database"
+    type: string
+  sense.config.db.username:
+    title: "Google Cloud SQL Database Username"
+    description: "The username to connect to the pre-provisioned Google Cloud SQL Database"
+    type: string
+  sense.config.db.password:
+    title: "Google Cloud SQL Database Password"
+    description: "The password to connect to the pre-provisioned Google Cloud SQL Database"
+    type: string
+    x-google-marketplace:
+      type: MASKED_FIELD
+  sense.config.db.ssl:
+    title: "Google Cloud SQL Database SSL Mode"
+    description: "The SSL mode used to connect to the pre-provisioned Google Cloud SQL Database"
+    type: string
+    enum:
+    - "disable"
+    - "require"
+    - "verify-ca"
+    - "verify-full"
+    default: "require"
+  sense.config.email.sendgrid.enabled:
+    title: "Enable SendGrid Support"
+    description: "Enables SendGrid support for e-mail in the Sense application."
+    type: boolean
+    default: false
+  sense.config.email.sendgrid.api_key:
+    title: "SendGrid API Key"
+    description: "Your SendGrid API Key (if applicable)"
+    type: string
+  sense.config.email.mailgun.enabled:
+    title: "Enable Mailgun Support"
+    description: "Enables MailGun support for e-mail in the Sense application."
+    type: boolean
+    default: false
+  sense.config.email.mailgun.api_key:
+    title: "MailGun API Key"
+    description: "Your MailGun API Key (if applicable)"
+    type: string
+  sense.config.email.mailjet.enabled:
+    title: "Enable MailJet Support"
+    description: "Enables MailJet support for e-mail in the Sense application."
+    type: boolean
+    default: false
+  sense.config.email.mailjet.api_key:
+    title: "MailJet API Key"
+    description: "Your MailJet API Key (if applicable)"
+    type: string
+  sense.config.email.postmark.enabled:
+    title: "Enable PostMark Support"
+    description: "Enables PostMark support for e-mail in the Sense application."
+    type: boolean
+    default: false
+  sense.config.email.postmark.api_key:
+    title: "PostMark API Key"
+    description: "Your PostMark API Key (if applicable)"
+    type: string
+  sense.config.email.smtp.enabled:
+    title: "Enabled SMTP Support"
+    description: "Enables raw SMTP support for e-mail in the Sense application."
+    type: boolean
+    default: false
+  sense.config.email.smtp.host:
+    title: "SMTP Hostname"
+    description: "The hostname of your SMTP Relay (if applicable)"
+    type: string
+  sense.config.email.smtp.port:
+    title: "SMTP Port"
+    description: "The port of your SMTP Relay (if applicable)"
+    type: string
+  sense.config.email.smtp.username:
+    title: "SMTP Username"
+    description: "Your SMTP Relay username (if applicable)"
+    type: string
+  sense.config.email.smtp.password:
+    title: "SMTP Password"
+    description: "You SMTP Relay password (if applicable)"
+    type: string
+    x-google-marketplace:
+      type: MASKED_FIELD
+
 required:
 - name
-- global.domain_name
 - namespace
+- sense.ingress_available
+- sense.config.org.name
+- sense.config.org.admin_email
+- sense.config.storage.bucket_name
+- sense.config.db.hostname
+- sense.config.db.port
+- sense.config.db.database_name
+- sense.config.db.username
+- sense.config.db.password
+- sense.config.db.ssl
+- sense.config.email.sendgrid.enabled
+- sense.config.email.mailgun.enabled
+- sense.config.email.mailjet.enabled
+- sense.config.email.postmark.enabled
+- sense.config.email.smtp.enabled
