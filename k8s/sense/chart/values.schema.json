@@ -4,7 +4,7 @@
     "definitions": {
         "Values": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "global": {
                     "$ref": "#/definitions/Global"

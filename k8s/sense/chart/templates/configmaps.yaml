@@ -1,7 +1,54 @@
 ---
-####################
-# Autolabel
-####################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: sense-config
+    namespace: {{ .Release.Namespace | default "sense" }}
+data:
+    DOMAIN_NAME: {{ .Values.sense.config.domain_name | default "" }}
+    BUCKET_NAME: {{ .Values.sense.storage.bucket_name | default "" }}
+    DB_HOST: {{ .Values.sense.config.db.hostname | default "" }}
+    DB_PORT: {{ .Values.sense.config.db.port | default "" }}
+    DB_NAME: {{ .Values.sense.config.db.name | default "" }}
+    DB_USERNAME: {{ .Values.sense.config.db.username | default "" }}
+    DB_PASSWORD: {{ .Values.sense.config.db.password | default "" }}
+    DB_SSL: {{ .Values.sense.config.db.ssl | default "" }}
+    {{ if eq .Values.sense.config.email.sendgrid.enabled "true" }}
+    SENDGRID_API_KEY: {{ .Values.sense.config.email.sendgrid.api_key | default "" }}
+    SENDGRID_HOSTNAME: "smtp.sendgrid.net"
+    SENDGRID_PORT: "2525"
+    {{ end }}
+    {{ if eq .Values.sense.config.email.mailgun.enabled "true" }}
+    MAILGUN_API_KEY: {{ .Values.sense.config.email.mailgun.api_key | default "" }}
+    MAILGUN_HOSTNAME: "smtp.mailgun.org"
+    MAILGUN_PORT: "2525"
+    {{ end }}
+    {{ if eq .Values.sense.config.email.mailjet.enabled "true" }}
+    MAILJET_API_KEY: {{ .Values.sense.config.email.mailjet.api_key }}
+    MAILJET_HOSTNAME: "in-v3.mailjet.com"
+    MAILJET_PORT: "2525"
+    {{ end }}
+    {{ if eq .Values.sense.config.email.postmark.enabled "true" }}
+    POSTMARK_API_KEY: {{ .Values.sense.config.email.postmark.api_key | default "" }}
+    POSTMARK_HOSTNAME: ""
+    POSTMARK_PORT: "2525"
+    {{ end }}
+    {{ if eq .Values.sense.config.email.smtp.enabled "true" }}
+    SMTP_HOST: {{ .Values.sense.config.email.smtp.host | default "" }}
+    SMTP_PORT: {{ .Values.sense.config.email.smtp.port | default "" }}
+    SMTP_USERNAME: {{ .Values.sense.config.email.smtp.username | default "" }}
+    SMTP_PASSWORD: {{ .Values.sense.config.email.smtp.password | default "" }}
+    {{ end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: sense-init
+    namespace: {{ .Release.Namespace | default "sense" }}
+data:
+    ORGANIZATION_NAME: {{ .Values.sense.config.org.name | default "" }}
+    ORGANIZATION_ADMIN_EMAIL: {{ .Values.sense.config.org.admin_email | default "" }}
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,9 +57,6 @@ metadata:
 data:
     AUTOLABEL_SERVICE_PORT: "5000"
 ---
-####################
-# Accounts
-####################
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -32,13 +76,10 @@ data:
     NEW_RELIC_APP_NAME: ""
     APP_URL: ""
 ---
-####################
-# Backend API (ingress)
-####################
 apiVersion: v1
 kind: ConfigMap
 metadata:
-    name: backend-api
+    name: api
     namespace: sense
 data:
     SENSE_INGRESS_GRPC_PORT: "9090"
@@ -57,17 +98,11 @@ data:
     SENSE_INGRESS_EMAIL_SENDER: no-reply@sixgill.com
     SENSE_INGRESS_SQL_RUN_SETUP: "false"
     GOOGLE_PROJECT_ID: sixgill
-    SENSE_INGRESS_HYPERLABEL_RECT2POLY_DEBUG: "true"
-    HYPERLABEL_ENDPOINT: https://ingress.stage.sixgill.io/hl
-    HYPERLABEL_UPLOAD_BUCKET: "{{ .Values.global.bucketName }}/hyperlabel/upload/"
-    SENSE_INGRESS_BG_AUTOLABEL_SERVICE: "http://autolabel-cuda11.{{ .Release.Namespace | default "sense" }}.svc.cluster.local:8080"
+    SENSE_INGRESS_BG_AUTOLABEL_SERVICE: "http://autolabel.{{ .Release.Namespace | default "sense" }}.svc.cluster.local:8080"
     SENSE_INGRESS_BG_AUTOLABEL_TIMEOUT: 30s
     SENSE_INGRESS_BG_DEBUG: "true"  
     SENSE_INGRESS_SQL_DIALECT: postgres
 ---
-####################
-# Migrator
-####################
 apiVersion: v1
 kind: ConfigMap
 metadata:

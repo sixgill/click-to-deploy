@@ -1,10 +1,44 @@
 global:
     imagePullSecrets: 
     - regcred
-    domain_name: ""
 
 sense:
     ingress_available: true
+
+    config:
+        domain_name: ""
+        org:
+            name: ""
+            admin_email: ""
+        storage:
+            bucket_name: ""
+            bucket_service_account_json: ""
+        db:
+            hostname: ""
+            port: ""
+            database_name: ""
+            username: ""
+            password: ""
+            ssl: ""
+        email:
+            sendgrid:
+                enabled: "false"
+                api_key: ""
+            mailgun:
+                enabled: "false"
+                api_key: ""
+            mailjet:
+                enabled: "false"
+                api_key: ""
+            postmark:
+                enabled: "false"
+                api_key: ""
+            smtp:
+                enabled: "true"
+                host: ""
+                port: ""
+                username: ""
+                password: ""
 
     autolabel:
         registry: gcr.io
@@ -26,7 +60,7 @@ sense:
         repo: sense-artifacts/marketplace/dashboard
         tag: latest
 
-    backendApi:
+    api:
         registry: gcr.io
         repo: sense-artifacts/marketplace/backend-api
         tag: fix
