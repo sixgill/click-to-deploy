@@ -14,7 +14,9 @@ x-google-marketplace:
   clusterConstraints:
     assistedClusterCreation:
       type: DISABLED
-      creationGuidance: "New Clusters should have a node pool available with at least 4 NVIDIA TESLA T4 GPUs available, and the nvidia driver daemonset deployed."
+      creationGuidance: |
+        New Clusters should have a node pool available with at least 4 NVIDIA TESLA GPUs available, and the nvidia driver daemonset deployed.
+        The type of GPU is less relevant and up to the cutsomer, but the Sense SaaS platform runs on NVIDIA TESLA T4 GPUs.
     istio:
       type: UNSUPPORTED
     resources:
@@ -24,6 +26,9 @@ x-google-marketplace:
             limits: 4
             platforms:
             - nvidia-tesla-t4
+            - nvidia-tesla-v100
+            - nvidia-tesla-p100
+            - nvidia-tesla-p4
             - nvidia-tesla-k80
 
   images:
@@ -33,92 +38,72 @@ x-google-marketplace:
           type: REPO_WITH_REGISTRY
         imageTag:
           type: TAG
-    accounts:
-      properties:
-        sense.accounts.registry:
-          type: REGISTRY
-        sense.accounts.repo:
-          type: REPO_WITHOUT_REGISTORY
-        sense.accounts.tag:
-          type: TAG
     autolabel:
       properties:
-        sense.autolabel.registry:
-          type: REGISTRY
         sense.autolabel.repo:
-          type: REPO_WITHOUT_REGISTORY
+          type: REPO_WITH_REGISTORY
         sense.autolabel.tag:
           type: TAG
     nextlabel:
       properties:
-        sense.nextlabel.registry:
-          type: REGISTRY
         sense.nextlabel.repo:
-          type: REPO_WITHOUT_REGISTORY
+          type: REPO_WITH_REGISTORY
         sense.nextlabel.tag:
           type: TAG
     smartpoly:
       properties:
-        sense.smartpoly.registry:
-          type: REGISTRY
         sense.smartpoly.repo:
-          type: REPO_WITHOUT_REGISTORY
+          type: REPO_WITH_REGISTORY
         sense.smartpoly.tag:
           type: TAG
     dashboard:
       properties:
-        sense.dashboard.registry:
-          type: REGISTRY
         sense.dashboard.repo:
-          type: REPO_WITHOUT_REGISTORY
+          type: REPO_WITH_REGISTORY
         sense.dashboard.tag:
           type: TAG
     api:
       properties:
-        sense.api.registry:
-          type: REGISTRY
         sense.api.repo:
-          type: REPO_WITHOUT_REGISTORY
+          type: REPO_WITH_REGISTORY
         sense.api.tag:
           type: TAG
     migrator:
       properties:
-        sense.migrator.registry:
-          type: REGISTRY
         sense.migrator.repo:
-          type: REPO_WITHOUT_REGISTORY
+          type: REPO_WITH_REGISTORY
         sense.migrator.tag:
           type: TAG
 
 properties:
   autolabel:
     type: string
-    default: gcr.io/sense-marketplace-production/sense/autolabel:v1.0.0
+    default: gcr.io/sixgill-public/sense/autolabel:v1.0.0
     x-google-marketplace:
       type: IMAGE
   nextlabel:
     type: string
-    default: gcr.io/sense-marketplace-production/sense/nextlabel:v1.0.0
+    default: gcr.io/sixgill-public/sense/nextlabel:v1.0.0
     x-google-marketplace:
       type: IMAGE
   smartploy:
     type: string
-    default: gcr.io/sense-marketplace-production/sense/smartpoly:v1.0.0
+    default: gcr.io/sixgill-public/sense/smartpoly:v1.0.0
     x-google-marketplace:
       type: IMAGE
   dashboard:
     type: string
-    default: gcr.io/sense-marketplace-production/sense/dashboard:v1.0.0
+    default: gcr.io/sixgill-public/sense/dashboard:v1.0.0
     x-google-marketplace:
       type: IMAGE
   api:
     type: string
-    default: gcr.io/sense-marketplace-production/sense/api:v1.0.0
+    default: gcr.io/sixgill-public/sense/api:v1.0.0
     x-google-marketplace:
       type: IMAGE
   migrator:
     type: string
-    default: gcr.io/sense-marketplace-production/sense/migrator:v1.0.0
+    default: gcr.io/sixgill-public/sense/migrator:v1.0.0
     x-google-marketplace:
       type: IMAGE
   name:
@@ -135,33 +120,56 @@ properties:
     default: sense
     x-google-marketplace:
       type: NAMESPACE
-  sense.ingress_available:
+  ingress_available:
     type: "boolean"
     x-google-marketplace:
       type: INGRESS_AVAILABLE
-  sense.config.domain_name:
+  config.domain_name:
     title: "Domain Name"
     description: "The domain name to configure the Sense application to use."
     type: string
-  sense.config.org.name:
+  config.org.name:
     title: "Organization Name"
     description: "The organization name to create within the Sense application."
     type: string
-  sense.config.org.admin_email:
+  config.org.admin_email:
     title: "Administrators E-mail Address"
     description: "The initial administrator account e-mail address to create within the Sense application"
     type: string
-  sense.config.storage.bucket_name:
-    title: "Google Cloud Storage Bucket Name"
-    description: "The name of the Google Cloud Storage Bucket for the Sense application to use."
+  config.storage.upload_bucket_name:
+    title: "Google Cloud Storage Upload Bucket Name"
+    description: "The name of the Google Cloud Storage Bucket for the Sense application to use for uploads."
     type: string
-  sense.config.storage.bucket_service_account_json:
+  config.storage.download_bucket_name:
+    title: "Google Cloud Storage Download Bucket Name"
+    description: "The name of the Google Cloud Storage Bucket for the Sense application to use for downloads."
+    type: string
+  config.storage.bucket_service_account_json:
     title: "Google Cloud Storage Bucket Service Account"
     description: |
       The IAM Service Account JSON key file contents that the Sense application should use to access the provided Google Cloud Storage Bucket.
       Alternatively, the Google Kubernetes Engine nodes that Sense will be running on can be configured to use an instance-level Service Account
       so that a service account does not need to be supplied to the Sense application.
     type: string
+  config.redis.address:
+    title: "Google Cloud Memstore (Redis) Service Address"
+    description: "The Address of the pre-provisioned Google Cloud Memstore (Redis) instance"
+    type: string
+  config.redis.port:
+    title: "Google Cloud Memstore (Redis) Service Port"
+    description: "The Port of the pre-provisioned Google Cloud Memstore (Redis) instance"
+    type: string
+  config.redis.auth.enabled:
+    title: "Google Cloud Memstore (Redis) Auth Enabled"
+    description: "Whether or not AUTH has been enabled on the Google Cloud Memstore (Redis) instance"
+    type: boolean
+  config.redis.auth.string:
+    title: "Google Cloud Memstore (Redis) Auth String"
+    description: "If AUTH is enabled, the AUTH string provided by the pre-provisioned Google Cloud Memstore (Redis) instance"
+    type: string
+  config.redis.certificate_authority:
+    title: "Google Cloud Memstore (Redis) Certificate Authority"
+    description: "The contents of the server-ca.pem file downloaded from the pre-provisioned Google Cloud Memstore (Redis) instance"
   sense.config.db.hostname:
     title: "Google Cloud SQL Database Hostname"
     description: |
@@ -259,18 +267,22 @@ properties:
 required:
 - name
 - namespace
-- sense.ingress_available
-- sense.config.org.name
-- sense.config.org.admin_email
-- sense.config.storage.bucket_name
-- sense.config.db.hostname
-- sense.config.db.port
-- sense.config.db.database_name
-- sense.config.db.username
-- sense.config.db.password
-- sense.config.db.ssl
-- sense.config.email.sendgrid.enabled
-- sense.config.email.mailgun.enabled
-- sense.config.email.mailjet.enabled
-- sense.config.email.postmark.enabled
-- sense.config.email.smtp.enabled
+- ingress_available
+- config.org.name
+- config.org.admin_email
+- config.storage.upload_bucket_name
+- config.redis.address
+- config.redis.port
+- config.redis.auth.enabled
+- config.redis.certificate_authority
+- config.db.hostname
+- config.db.port
+- config.db.database_name
+- config.db.username
+- config.db.password
+- config.db.ssl
+- config.email.sendgrid.enabled
+- config.email.mailgun.enabled
+- config.email.mailjet.enabled
+- config.email.postmark.enabled
+- config.email.smtp.enabled
