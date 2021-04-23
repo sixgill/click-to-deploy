@@ -40,39 +40,39 @@ x-google-marketplace:
           type: TAG
     autolabel:
       properties:
-        sense.autolabel.repo:
+        autolabel.image.repository:
           type: REPO_WITH_REGISTORY
-        sense.autolabel.tag:
+        autolabel.image.tag:
           type: TAG
     nextlabel:
       properties:
-        sense.nextlabel.repo:
+        nextlabel.image.repository:
           type: REPO_WITH_REGISTORY
-        sense.nextlabel.tag:
+        nextlabel.image.tag:
           type: TAG
     smartpoly:
       properties:
-        sense.smartpoly.repo:
+        smartpoly.image.repository:
           type: REPO_WITH_REGISTORY
-        sense.smartpoly.tag:
+        smartpoly.image.tag:
           type: TAG
     dashboard:
       properties:
-        sense.dashboard.repo:
+        dashboard.image.repository:
           type: REPO_WITH_REGISTORY
-        sense.dashboard.tag:
+        dashboard.image.tag:
           type: TAG
     api:
       properties:
-        sense.api.repo:
+        api.image.repository:
           type: REPO_WITH_REGISTORY
-        sense.api.tag:
+        api.image.tag:
           type: TAG
     migrator:
       properties:
-        sense.migrator.repo:
+        migrator.image.repository:
           type: REPO_WITH_REGISTORY
-        sense.migrator.tag:
+        migrator.image.tag:
           type: TAG
 
 properties:
